@@ -2,8 +2,8 @@
 project:
   title:        "ECE298A - RAM Project"      # ECE 298A - RAM Project
   author:       "Robert Tang"      # Robert Tang
-  discord:      ""      # tyt33
-  description:  ""      # One line description of what your project does
+  discord:      "tyt33"      # tyt33
+  description:  "ECE 298A project folder"      # One line description of what your project does
   language:     "Verilog" # other examples include SystemVerilog, Amaranth, VHDL, etc
   clock_hz:     0       # Clock frequency in Hz (or 0 if not applicable)
 
