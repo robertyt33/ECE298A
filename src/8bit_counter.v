@@ -11,7 +11,7 @@
 // - Increment on enable (en)
 // - Tri-state outputs when oe = 0
 
-module tt_um_counter8_tristate (
+module tt_um_tyt33 (
     input  wire [7:0] ui_in,    // dedicated inputs
     output wire [7:0] uo_out,   // dedicated outputs
     input  wire [7:0] uio_in,   // IOs: Input path (load_val[7:0])
@@ -51,3 +51,4 @@ module tt_um_counter8_tristate (
     wire _unused = &{ena, rst_n, 1'b0};
 
 endmodule
+
