@@ -28,6 +28,9 @@ module counter8_tristate (
     end
 
     // Tri-state output buffer
-    assign q = (oe) ? cnt : 8'bz;
+    assign uo_out  = (oe) ? cnt : 8'b0; // drives 0 when disabled (TinyTapeout requires no 'z')
+    assign uio_out = 8'b0;
+    assign uio_oe  = 8'b0;
 
 endmodule
+
