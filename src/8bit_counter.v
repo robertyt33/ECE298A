@@ -31,13 +31,19 @@ module tt_um_tyt33 (
 
     reg [7:0] cnt;
 
+    // Decode the control signals in a 4-state safe way so that X/Z values
+    // coming from asynchronous chip inputs do not block the counter from
+    // incrementing once load has been released.
+    wire do_load  = (load === 1'b1);
+    wire do_count = (en   === 1'b1) && !do_load;
+
     // Async reset, sync load/increment
     always @(posedge clk or negedge arst_n) begin
         if (!arst_n)
             cnt <= 8'd0;                // reset (clear)
-        else if (load)
+        else if (do_load)
             cnt <= load_val;            // synchronous load
-        else if (en)
+        else if (do_count)
             cnt <= cnt + 8'd1;          // up counter
         // else: hold
     end
