@@ -22,13 +22,20 @@ module tb ();
   wire [7:0] uo_out;
   wire [7:0] uio_out;
   wire [7:0] uio_oe;
+
 `ifdef GL_TEST
   wire VPWR = 1'b1;
   wire VGND = 1'b0;
 `endif
 
+  // Clock generator (10ns period)
+  initial begin
+    clk = 0;
+    forever #5 clk = ~clk;
+  end
+
   // Replace tt_um_example with your module name:
-  tt_um_tyt33 user_project (
+  tt_um_prog_counter8 user_project (
 
       // Include power ports for the Gate Level test:
 `ifdef GL_TEST
