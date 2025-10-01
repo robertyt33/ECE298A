@@ -17,7 +17,7 @@
 //   uio_in[2] : UP   (1 = up-count, 0 = down-count)  -- ignored during LOAD
 //   uio_in[3] : OE   (1 = drive count on uio_out, 0 = high-Z)
 //   uio_in[7:4] : unused (read as 0)
-//
+// 
 // Data mapping:
 //   ui_in[7:0] : parallel load value (P[7:0])
 //
@@ -35,19 +35,22 @@ module tt_um_tyt33 (
     input  wire [7:0] uio_in,   // IOs: Input path (control signals)
     output wire [7:0] uio_out,  // IOs: Output path (tri-state count)
     output wire [7:0] uio_oe,   // IOs: Enable path (1=drive uio_out)
-    input  wire       ena,      // always 1 when powered (unused)
+    input  wire       ena,      // always 1 (not used)
     input  wire       clk,      // clock
-    input  wire       rst_n     // asynchronous reset, active-low
+    input  wire       rst_n     // async reset, active-low
 );
 
-  // ---- Control decode -------------------------------------------------------
+  // Control Decode
+    // extarct inividual control signals from uio_in
   wire en_i   = uio_in[0];
   wire load_i = uio_in[1];
   wire up_i   = uio_in[2];
   wire oe_i   = uio_in[3];
 
-  // ---- Counter core ---------------------------------------------------------
+  //q: current state; d: next stat
+    //Counter value
   reg  [7:0] count_q, count_d;
+    //Status flags
   reg        wrap_pulse_q, wrap_pulse_d;
   reg        carry_borrow_q, carry_borrow_d;
   reg        loaded_pulse_q, loaded_pulse_d;
@@ -59,11 +62,12 @@ module tt_um_tyt33 (
     wrap_pulse_d    = 1'b0;
     carry_borrow_d  = 1'b0;
     loaded_pulse_d  = 1'b0;
-
+    // 1. LOAD w. highest priority
     if (load_i) begin
       // synchronous parallel load
-      count_d        = ui_in;
-      loaded_pulse_d = 1'b1;
+      count_d        = ui_in; // load value from ui_in[7:0] in next clk
+      loaded_pulse_d = 1'b1; // pulse to indicate load occurred
+    // 2. Count if enabled and not loading
     end else if (en_i) begin
       if (up_i) begin
         // up-count
@@ -85,16 +89,17 @@ module tt_um_tyt33 (
         end
       end
     end
+    //if en=0/load=0, hold current state
   end
 
-  // Async reset, sync update
+// Async reset, sync update
   always @(posedge clk or negedge rst_n) begin
-    if (!rst_n) begin
+    if (!rst_n) begin // if rst is low,clear all registers
       count_q         <= 8'h00;
       wrap_pulse_q    <= 1'b0;
       carry_borrow_q  <= 1'b0;
       loaded_pulse_q  <= 1'b0;
-    end else begin
+    end else begin  // else update to next state at clock edge as normal
       count_q         <= count_d;
       wrap_pulse_q    <= wrap_pulse_d;
       carry_borrow_q  <= carry_borrow_d;
@@ -102,11 +107,11 @@ module tt_um_tyt33 (
     end
   end
 
-  // ---- Tri-state output bus (uio) ------------------------------------------
-  assign uio_out = count_q;           // value to drive when enabled
-  assign uio_oe  = {8{oe_i}};         // drive all 8 bits only when OE=1
+// Tri-state output
+  assign uio_out = count_q; //put data on uio_out bus
+  assign uio_oe  = {8{oe_i}}; //replicat OE to 0xff when oe_i=1, else 0x00
 
-  // ---- Always-driven debug/status pins -------------------------------------
+  //Always-driven debug/status pins
   assign uo_out = {
       wrap_pulse_q,        // [7]
       carry_borrow_q,      // [6]
@@ -114,7 +119,7 @@ module tt_um_tyt33 (
       count_q[4:0]         // [4:0] low bits of count
   };
 
-  // ---- Unused inputs packed to avoid lint/synthesis warnings ----------------
+  //Unused inputs
   wire _unused = &{ena, 1'b0};
 
 endmodule
