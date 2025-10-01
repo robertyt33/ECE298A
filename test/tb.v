@@ -28,11 +28,6 @@ module tb ();
   wire VGND = 1'b0;
 `endif
 
-  // Clock generator (10ns period)
-  initial begin
-    clk = 0;
-    forever #5 clk = ~clk;
-  end
 
   // Replace tt_um_example with your module name:
   tt_um_tyt33 user_project (
