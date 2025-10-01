@@ -29,7 +29,7 @@
 //                  [6] carry_borrow (carry on up wrap, borrow on down wrap)
 //                  [5] loaded_pulse (1-cycle pulse when LOAD occurred)
 //                  [4:0] current count[4:0] (low 5 bits for quick visibility)
-module tt_um_prog_counter8 (
+module tt_um_tyt33 (
     input  wire [7:0] ui_in,    // Dedicated inputs (parallel load value)
     output wire [7:0] uo_out,   // Dedicated outputs (status/debug)
     input  wire [7:0] uio_in,   // IOs: Input path (control signals)
@@ -118,3 +118,4 @@ module tt_um_prog_counter8 (
   wire _unused = &{ena, 1'b0};
 
 endmodule
+
